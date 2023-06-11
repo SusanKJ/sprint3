@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profissionais</title>
+    <link rel="stylesheet" href="styleBD.css">
+</head>
+
+<body>
+    <!--Cabeçalho-->
+    <header id="cabecalho">
+        <img src="img/logoFP.png" class="logo">
+        <h1>Cadastro de Profissionais</h1>
+    </header>
+
+    <section class="basedados">
+
+        <!--Preenchimento dados profissionais-->
+        <div id="formProfissionais">
+            <h4 class="dadosPessoais">Dados Pessoias</h4>
+            <label for="campoNome">Nome Completo:</label>
+            <input type="text" id="campoNome">
+            <label for="campoTelefone">Telefone:</label>
+            <input type="text" id="campoTelefone">
+            <label for="campoProfissao">Profissão:</label>
+            <input type="text" id="campoProfissao">
+        </div>
+
+        <!--Disponibilidade para atendimento-->
+        <div id="formDisponibilidade">
+            <h4 class="disponibilidade">Disponibilidade</h4>
+            <label for="campoDia">Dia da semana:</label>
+            <input type="text" id="campoDia">
+        </div>
+        <div class="horario">
+            <h4 class="horario">Horário</h4>
+            <label for="campoHoraDe">De:</label>
+            <input type="text" id="campoHoraDe">
+            <label for="campoHoraAs">às:</label>
+            <input type="text" id="campoHoraAs">
+        </div>
+        <input type="submit" id="btnIncluirContato" value="salvar"/>
+
+        <!--Chamar base de dados-->
+        <input type="submit" id="btnCarregaDados" value="Carrega Dados"/>
+
+        <input id="limpaTela" type="submit" value="Limpar Dados">
+        <div id="tela"></div>
+            
+    </section>
+</body>
+
+</html>
+
+<script>
+    const salvar = document.getElementById('btnIncluirContato');
+    const carregaDados = document.getElementById('btnCarregaDados');
+    const limpaTela = document.getElementById('limpaTela');
+
+    limpaTela.addEventListener('click', (event) => {
+        event.preventDefault();
+         const tela = document.getElementById('tela');
+         tela.innerHTML = '';
+    })
+
+    carregaDados.addEventListener('click', (event) => {
+        event.preventDefault();
+
+        fetch('http://localhost:3000/contatos')
+        .then(response => response.json())
+            .then(data => {
+                const tela = document.getElementById('tela');
+                let html = ``;
+                for (let index = 0; index < data.length; index++) {
+                    html += `
+                        <p>${data[index].nome}</p>
+                        <p>${data[index].profissao}</p>
+                        <p>${data[index].telefone}</p>
+                        <p>${data[index].dia}</p>
+                        <p>${data[index].inicio}</p>
+                        <p>${data[index].fim}</p>
+                        <br><hr><br>
+                    `; 
+                }
+                tela.innerHTML = html;
+            })
+    })
+
+    salvar.addEventListener('click', (event) => {
+        event.preventDefault();
+        const campoNome = document.getElementById('campoNome').value;
+        const campoTelefone = document.getElementById('campoTelefone').value;
+        const campoProfissao = document.getElementById('campoProfissao').value;
+        const campoDia = document.getElementById('campoDia').value;
+        const campoHoraDe = document.getElementById('campoHoraDe').value;
+        const campoHoraAs = document.getElementById('campoHoraAs').value;
+
+        const data = {
+            nome: campoNome,
+            telefone: campoTelefone,
+            profissao: campoProfissao,
+            dia: campoDia,
+            inicio: campoHoraDe,
+            fim: campoHoraAs
+        }
+
+        fetch('http://localhost:3000/contatos', {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+    })
+
+    
+</script>
